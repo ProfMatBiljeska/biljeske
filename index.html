@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bilješke</title>
+  <meta name="description" content="Pomoć pri pisanju bilješki za e-Dnevnik na temelju fotografije testa.">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bilješke">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Bilješke</h1>
+    <button id="btnSettings" class="icon-btn" aria-label="Postavke" type="button">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M4 7h9M17 7h3M4 17h3M11 17h9"/>
+        <circle cx="15" cy="7" r="2"/>
+        <circle cx="9" cy="17" r="2"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav class="steps" id="steps" aria-label="Koraci">
+    <span data-step="setup" class="on">1 Test</span>
+    <span data-step="review">2 Pregled</span>
+    <span data-step="note">3 Bilješka</span>
+  </nav>
+
+  <main>
+    <!-- 1. Postavljanje -->
+    <section id="screen-setup" class="screen">
+      <div class="card">
+        <h2>Što je ispitivano</h2>
+
+        <div class="row2">
+          <label>Razred
+            <select id="selRazred"></select>
+          </label>
+          <label>Tema
+            <select id="selTema"></select>
+          </label>
+        </div>
+
+        <fieldset class="seg-wrap">
+          <legend>Učenik ili učenica?</legend>
+          <div class="seg" id="spol" role="radiogroup" aria-label="Spol učenika">
+            <button type="button" role="radio" aria-checked="false" data-v="F">Učenica</button>
+            <button type="button" role="radio" aria-checked="false" data-v="M">Učenik</button>
+          </div>
+        </fieldset>
+
+        <div class="field-head">
+          <h3>Ishodi</h3>
+          <button type="button" id="btnAddIshod" class="link-btn">+ Dodaj vlastiti</button>
+        </div>
+        <div id="ishodiList" class="ishodi"></div>
+        <div id="addIshodBox" class="add-box" hidden>
+          <input id="inpIshod" type="text" placeholder="Npr. Objašnjava postupak računanja potencije." autocomplete="off">
+          <button type="button" id="btnSaveIshod" class="btn small">Spremi</button>
+        </div>
+        <p class="hint">Ishodi su preuzeti iz izvedbenih kurikuluma. Odznači one koje test ne provjerava.</p>
+
+        <label>Napomena <span class="opt">(nije obavezno)</span>
+          <textarea id="napomena" rows="2" placeholder="Npr. test pisan u produženom vremenu, ispitivane su samo potencije s razlomcima."></textarea>
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="field-head">
+          <h2>Fotografije testa</h2>
+          <span id="slikeBroj" class="pill">0 / 4</span>
+        </div>
+        <p class="privacy">Pazi da ime i prezime učenika ne budu u kadru. Po potrebi zakrij vrh stranice dolje.</p>
+        <div id="thumbs" class="thumbs"></div>
+        <input id="fileInp" type="file" accept="image/*" multiple hidden>
+        <button type="button" id="btnAddPhoto" class="btn secondary">Dodaj fotografiju</button>
+      </div>
+
+      <button type="button" id="btnAnaliza" class="btn primary big" disabled>Pročitaj test</button>
+      <p id="setupHint" class="hint center"></p>
+    </section>
+
+    <!-- 2. Pregled -->
+    <section id="screen-review" class="screen" hidden>
+      <div class="card">
+        <h2>Provjeri što sam pročitao</h2>
+        <p class="hint">Ispravi što ne valja. Bilješka će se pisati prema ovome što je ovdje. Žuto su označena mjesta gdje nisam siguran.</p>
+      </div>
+      <div id="zadaci"></div>
+      <button type="button" id="btnAddZadatak" class="btn secondary">+ Dodaj zadatak</button>
+
+      <div class="card">
+        <h3>Uočeno u cjelini</h3>
+        <textarea id="obrasci" rows="5"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btnBackSetup" class="btn secondary">Natrag</button>
+        <button type="button" id="btnNote" class="btn primary">Napiši bilješku</button>
+      </div>
+    </section>
+
+    <!-- 3. Bilješka -->
+    <section id="screen-note" class="screen" hidden>
+      <div class="card">
+        <div class="field-head">
+          <h2>Bilješka</h2>
+          <span id="brojRecenica" class="pill">0 rečenica</span>
+        </div>
+        <textarea id="biljeska" rows="11" aria-label="Tekst bilješke"></textarea>
+        <button type="button" id="btnCopy" class="btn primary big">Kopiraj</button>
+      </div>
+
+      <div class="card">
+        <h3>Preradi</h3>
+        <div class="chips" id="chips">
+          <button type="button" data-u="Skrati bilješku, ali zadrži najvažnije.">Kraće</button>
+          <button type="button" data-u="Dodaj nešto više detalja o onome što učenik već zna i što treba uvježbati.">Detaljnije</button>
+          <button type="button" data-u="Naglasi više ono što je učenik dobro napravio.">Više pohvale</button>
+          <button type="button" data-u="Napiši jasniju i konkretniju preporuku što učenik treba vježbati.">Jasnije preporuke</button>
+          <button type="button" data-u="Napiši jednostavnije, tako da ga lako razumije učenik 8. razreda.">Jednostavnije</button>
+        </div>
+        <div class="add-box">
+          <input id="inpUputa" type="text" placeholder="Ili upiši svoju uputu" autocomplete="off">
+          <button type="button" id="btnRefine" class="btn small">Primijeni</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btnBackReview" class="btn secondary">Natrag</button>
+        <button type="button" id="btnNew" class="btn secondary">Novi test</button>
+      </div>
+    </section>
+
+    <!-- Postavke -->
+    <section id="screen-settings" class="screen" hidden>
+      <div class="card">
+        <h2>Postavke</h2>
+
+        <label>API ključ
+          <div class="key-row">
+            <input id="inpKey" type="password" placeholder="sk-ant-..." autocomplete="off" autocapitalize="off" spellcheck="false">
+            <button type="button" id="btnShowKey" class="btn small secondary">Prikaži</button>
+          </div>
+        </label>
+        <p class="hint">Ključ se sprema samo u pohranu ovog uređaja i šalje se isključivo Anthropicu. Ne dijeli ovu aplikaciju s upisanim ključem.</p>
+
+        <label>Model
+          <select id="selModel">
+            <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (preporučeno)</option>
+            <option value="claude-opus-5-5">Claude Opus 5.5 (najtočniji, skuplji)</option>
+            <option value="claude-haiku-5-5">Claude Haiku 5.5 (najjeftiniji)</option>
+          </select>
+        </label>
+
+        <div class="actions tight">
+          <button type="button" id="btnTestKey" class="btn secondary">Provjeri ključ</button>
+          <button type="button" id="btnSaveSettings" class="btn primary">Spremi</button>
+        </div>
+        <p id="keyStatus" class="status" role="status"></p>
+      </div>
+
+      <div class="card">
+        <h3>Tvoj stil</h3>
+        <p class="hint">Zalijepi jednu do tri svoje bilješke (bez imena). Služe samo kao uzorak tona i duljine.</p>
+        <textarea id="inpStil" rows="7"></textarea>
+        <button type="button" id="btnResetStil" class="link-btn">Vrati zadani primjer</button>
+      </div>
+
+      <div class="card">
+        <button type="button" id="btnDelKey" class="btn danger">Obriši ključ s ovog uređaja</button>
+      </div>
+
+      <button type="button" id="btnBackSettings" class="btn secondary">Natrag</button>
+    </section>
+  </main>
+
+  <div id="busy" class="busy" hidden>
+    <div class="busy-box" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="busyText">Radim…</p>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="outcomes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
